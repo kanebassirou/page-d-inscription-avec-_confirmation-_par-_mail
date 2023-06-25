@@ -13,8 +13,26 @@ if (isset($_POST['valider'])) {
     if (!empty($_POST['email'])) {
         $cle = rand(100000, 900000);
         $email = $_POST['email'];
-        $inserUser = $bdd->prepare('INSERT INTO users (email, cle, confirme) VALUES (?, ?, ?)');
-        $inserUser->execute(array($email, $cle, 0));
+        try {
+            // Préparez votre requête d'insertion
+            $insertUser = $bdd->prepare('INSERT INTO users (email, cle, confirme) VALUES (?, ?, ?)');
+        
+            // Exécutez la requête avec les valeurs
+            $insertUser->execute(array($email, $cle, 0));
+            
+        
+            // Le reste de votre code après l'insertion réussie
+            // ...
+        } catch (PDOException $e) {
+            if ($e->getCode() === '23000') {
+                // La violation de contrainte unique s'est produite
+                echo "L'adresse e-mail est déjà utilisée. Veuillez en choisir une autre.";
+            } else {
+                // Autre erreur PDO
+                echo "Une erreur s'est produite lors de l'insertion dans la base de données.";
+            }
+        }
+        
 
         $recUser = $bdd->prepare('SELECT * FROM users WHERE email = ?');
         $recUser->execute(array($email));
@@ -31,7 +49,7 @@ if (isset($_POST['valider'])) {
 
                 $mail->SMTPSecure = 'tls';
                 $mail->Host = 'smtp.gmail.com';
-                $mail->Port = 587;
+                $mail->Port =587;
                 $mail->Username = 'kaneb1927@gmail.com';
                 $mail->Password = 'mpbwqjgyjgakrtmc
                 ';
@@ -58,7 +76,8 @@ if (isset($_POST['valider'])) {
             $from = 'kaneb1927@gmail.com';
             $name = 'Bassirou kane';
             $subj = 'Confirmation d\'e-mail pour activer votre compte';
-            $msg = 'http://localhost/mon%20blog/confirmation%20par%20mail/verifier.php?id=' . $_SESSION['id'] . '&cle=' . $cle;
+            $msg = 'http://localhost/mon%20bog/confirmation%20par%20mail/verifier.php?id='. $_SESSION['id'] . '&cle=' . $cle;
+
 
             $error = smtpmailer($to, $from, $name, $subj, $msg);
 
