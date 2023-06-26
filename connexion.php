@@ -7,7 +7,12 @@ if(isset($_POST['valider'])){
         $recupUser->execute(array($_POST['email']));
         if($recupUser->rowCount() >0){
             $userInfo = $recupUser->fetch();
-            header('Location: verifier.php?id='.$userInfo['id'].'&cle'.$userInfo['cle']);
+            if($userInfo['confirme']==1){
+                header('Location: verifier.php?id='.$userInfo['id'].'&cle='.$userInfo['cle']);
+
+            }else{
+                echo"vous n'étes pas confirme ou votre mail de validation n'est pas confirmerz";
+            }
         }else{
             echo '';
         }
